@@ -1,27 +1,113 @@
-total = 0
-$('#hopsSummary .brewpartitems td').each(function() {
-  value = $(this).text();
-  if(value.indexOf(' oz') >= 0 || value.indexOf(' g') >= 0) {
-    div = 1 // ounces in an ounce
-    len = value.indexOf(' oz');
-    if(len == -1) { // if oz doesn't exist, must be in g
-      len = value.indexOf(' g');
-      div = 28 // grams in an ounce
+function getMultiplier(input, units) {
+  var mult = 1
+  if(input == units) {
+    return mult
+  } else {
+    switch(units) {
+    case 'oz':
+      switch(input) {
+      case 'g':
+	mult = 1/28
+	break;
+      case 'lb':
+	mult = 16
+	break;
+      case 'kg':
+	mult = 35.274
+	break;
+      default:
+	mult = 1
+	break;
+      }
+      break;
+    case 'g':
+      switch(input) {
+      case 'oz':
+	mult = 28
+	break;
+      case 'lb':
+	mult = 448
+	break;
+      case 'kg':
+	mult = 1000
+	break;
+      default:
+	mult = 1
+	break;
+      }
+      break;
+    case 'lb':
+      switch(input) {
+      case 'g':
+	mult = 1/448
+	break;
+      case 'oz':
+	mult = 1/16
+	break;
+      case 'kg':
+	mult = 2.2
+	break;
+      default:
+	mult = 1
+	break;
+      }
+      break;
+    case 'kg':
+      switch(input) {
+      case 'g':
+	mult = 1/1000
+	break;
+      case 'oz':
+	mult = 1/35.274
+	break;
+      case 'lb':
+	mult = 1/2.2
+	break;
+      default:
+	mult = 1
+	break;
+      }
+      break;
+    default:
+      mult = 1
+      break;
     }
-    val = value.substr(0, len);
-    total = total + (parseFloat(val) / div);
+    return mult
   }
-  if(value.indexOf(' lb') >= 0 || value.indexOf(' kg') >= 0) {
-    mult = 16 // ounces in a pound
-    len = value.indexOf(' lb');
-    if(len == -1) { // if lb doesn't exist, must be in kg
-      len = value.indexOf(' kg');
-      mult = 35.274 // ounces in a kilogram
-    }
-    val = value.substr(0, len);
-    total = total + (parseFloat(val) * div);
-  }
+}
+
+chrome.storage.sync.get('units', function (obj) {
+  var units = 'oz'
+  units = obj.units
+  addHopTotal(units)
 });
-total = +total.toFixed(3)
-$('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' oz</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+
+function addHopTotal(units) {
+  var total = 0
+  $('#hopsSummary .brewpartitems td').each(function() {
+    var value = $(this).text();
+    if(value.indexOf(' oz') >= 0 || value.indexOf(' g') >= 0) {
+      var mult = getMultiplier('oz', units) // ounces in an ounce
+      var len = value.indexOf(' oz');
+      if(len == -1) { // if oz doesn't exist, must be in g
+	len = value.indexOf(' g');
+	mult = getMultiplier('g', units) // grams in an ounce 
+      }
+      var val = value.substr(0, len);
+      total = total + (parseFloat(val) * mult);
+    }
+    if(value.indexOf(' lb') >= 0 || value.indexOf(' kg') >= 0) {
+      var mult = getMultiplier('lb', units) // ounces in a pound
+      var len = value.indexOf(' lb');
+      if(len == -1) { // if lb doesn't exist, must be in kg
+	len = value.indexOf(' kg');
+	mult = getMultiplier('kg', units) // ounces in a kilogram
+      }
+      var val = value.substr(0, len);
+      total = total + (parseFloat(val) * mult);
+    }
+  });
+  total = +total.toFixed(3)
+  $('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+}
 
