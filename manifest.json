@@ -1,6 +1,6 @@
 {
   "name": "Brewer's Friend Hop Total",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "manifest_version": 2,
   "description": "Shows the total amount of hops in a recipe",
   "background": {"page": "background.html"},

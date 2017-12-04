@@ -114,9 +114,9 @@ function addHopTotal(units) {
   });
   total = +total.toFixed(3)
   if(count % 2 == 0) { // last one was even, so we need an odd
-    $('#hopsSummary table tr:last').after('<tr class="odd"> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+    $('#hopsSummary table tr:last').after('<tr class="odd"> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
   } else {
-    $('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+    $('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
   }
 }
 
