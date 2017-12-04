@@ -77,13 +77,16 @@ function getMultiplier(input, units) {
 }
 
 chrome.storage.sync.get('units', function (obj) {
-  var units = 'oz'
-  units = obj.units
+  var units = obj.units
+  if(units == null) {
+    units = 'oz'
+  }
   addHopTotal(units)
 });
 
 function addHopTotal(units) {
   var total = 0
+  var count = 0
   $('#hopsSummary .brewpartitems td').each(function() {
     var value = $(this).text();
     if(value.indexOf(' oz') >= 0 || value.indexOf(' g') >= 0) {
@@ -95,6 +98,7 @@ function addHopTotal(units) {
       }
       var val = value.substr(0, len);
       total = total + (parseFloat(val) * mult);
+      count = count + 1
     }
     if(value.indexOf(' lb') >= 0 || value.indexOf(' kg') >= 0) {
       var mult = getMultiplier('lb', units) // ounces in a pound
@@ -105,9 +109,14 @@ function addHopTotal(units) {
       }
       var val = value.substr(0, len);
       total = total + (parseFloat(val) * mult);
+      count = count + 1
     }
   });
   total = +total.toFixed(3)
-  $('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+  if(count % 2 == 0) { // last one was even, so we need an odd
+    $('#hopsSummary table tr:last').after('<tr class="odd"> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+  } else {
+    $('#hopsSummary table tr:last').after('<tr> <td width="10%"> <b>'+total+' '+units+'</b> </td> <td width="54%"> <b>Total</b> </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> <td width="12%"> &nbsp; </td> </tr>');
+  }
 }
 
